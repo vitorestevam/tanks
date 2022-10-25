@@ -69,16 +69,11 @@ namespace Complete
             m_OriginalPitch = m_MovementAudio.pitch;
         }
 
+        private (float, float) getInput() {
+            var input = (Input.GetAxis(m_MovementAxisName), Input.GetAxis(m_TurnAxisName));
 
-        private void Update ()
-        {
-            // Store the value of both input axes.
-            m_MovementInputValue = Input.GetAxis (m_MovementAxisName);
-            m_TurnInputValue = Input.GetAxis (m_TurnAxisName);
-
-            EngineAudio ();
+            return input;
         }
-
 
         private void EngineAudio ()
         {
@@ -107,35 +102,35 @@ namespace Complete
             }
         }
 
+        private void move((float move, float turn) input)
+        {
+
+            Debug.Log(input);
+            if (input.move != 0)
+            {
+                Vector3 movement = transform.forward * input.move * m_Speed * Time.deltaTime;
+
+                var command = new CommandMove(this.gameObject, movement);
+                command.Execute();
+            }
+            if (input.turn != 0)
+            {
+                float turn = input.turn * m_TurnSpeed * Time.deltaTime;
+
+                var command = new CommandTurn(this.gameObject, turn);
+                command.Execute();
+            }
+        }
+
+        private void Update()
+        {
+            EngineAudio();
+        }
 
         private void FixedUpdate ()
         {
-            // Adjust the rigidbodies position and orientation in FixedUpdate.
-            Move ();
-            Turn ();
-        }
-
-
-        private void Move ()
-        {
-            // Create a vector in the direction the tank is facing with a magnitude based on the input, speed and the time between frames.
-            Vector3 movement = transform.forward * m_MovementInputValue * m_Speed * Time.deltaTime;
-
-            // Apply this movement to the rigidbody's position.
-            m_Rigidbody.MovePosition(m_Rigidbody.position + movement);
-        }
-
-
-        private void Turn ()
-        {
-            // Determine the number of degrees to be turned based on the input, speed and time between frames.
-            float turn = m_TurnInputValue * m_TurnSpeed * Time.deltaTime;
-
-            // Make this into a rotation in the y axis.
-            Quaternion turnRotation = Quaternion.Euler (0f, turn, 0f);
-
-            // Apply this rotation to the rigidbody's rotation.
-            m_Rigidbody.MoveRotation (m_Rigidbody.rotation * turnRotation);
+            (float move, float turn) input = getInput();
+            move(input);
         }
     }
 }

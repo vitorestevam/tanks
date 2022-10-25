@@ -83,15 +83,12 @@ namespace Complete
 
         private void Fire ()
         {
+            var command = new CommandShot(m_FireTransform, m_Shell, m_CurrentLaunchForce);
+
+            command.Execute();
+
             // Set the fired flag so only Fire is only called once.
             m_Fired = true;
-
-            // Create an instance of the shell and store a reference to it's rigidbody.
-            Rigidbody shellInstance =
-                Instantiate (m_Shell, m_FireTransform.position, m_FireTransform.rotation) as Rigidbody;
-
-            // Set the shell's velocity to the launch force in the fire position's forward direction.
-            shellInstance.velocity = m_CurrentLaunchForce * m_FireTransform.forward; 
 
             // Change the clip to the firing clip and play it.
             m_ShootingAudio.clip = m_FireClip;
