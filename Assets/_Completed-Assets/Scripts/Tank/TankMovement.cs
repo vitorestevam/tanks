@@ -105,7 +105,6 @@ namespace Complete
         private void move((float move, float turn) input)
         {
 
-            Debug.Log(input);
             if (input.move != 0)
             {
                 Vector3 movement = transform.forward * input.move * m_Speed * Time.deltaTime;
